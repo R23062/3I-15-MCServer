@@ -1,0 +1,13 @@
+version: '3.3'
+services:
+  minecraft:
+    image: itzg/minecraft-server
+    ports:
+      - "25565:25565"
+    environment:
+      EULA: "TRUE"      # EULAへの同意
+      TYPE: "PAPER"     # 高速なサーバタイプ PaperMC を指定
+      MEMORY: "1G"      # 使用メモリ制限
+    volumes:
+      - ./data:/data    # データの永続化
+    restart: unless-stopped
