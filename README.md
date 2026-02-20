@@ -78,6 +78,9 @@ services:
     restart: unless-stopped
 
 ```
+<img width="955" height="166" alt="cat" src="https://github.com/user-attachments/assets/97e915cf-4bb4-4da2-96dd-0680ed3429c6" />
+<img width="955" height="166" alt="cat" src="https://github.com/user-attachments/assets/97e915cf-4bb4-4da2-96dd-0680ed3429c6" />
+<img width="955" height="166" alt="cat" src="https://github.com/user-attachments/assets/97e915cf-4bb4-4da2-96dd-0680ed3429c6" />
 
 ### 5.4 サービスの起動
 
@@ -101,7 +104,10 @@ docker compose ps
 
 ```
 
-> **（ここにスクリーンショット1を貼付：docker compose ps の結果）**
+<img width="959" height="46" alt="composeps" src="https://github.com/user-attachments/assets/153c4612-dca7-4fa5-8742-ce26ff0dfe19" />
+<img width="959" height="46" alt="composeps" src="https://github.com/user-attachments/assets/153c4612-dca7-4fa5-8742-ce26ff0dfe19" />
+<img width="959" height="46" alt="composeps" src="https://github.com/user-attachments/assets/153c4612-dca7-4fa5-8742-ce26ff0dfe19" />
+
 
 ### 6.2 ログ確認
 
@@ -112,7 +118,16 @@ docker compose logs
 
 ```
 
-> **（ここにスクリーンショット2を貼付：ログの最終行付近。Preparing level "world" 等）**
+<img width="959" height="164" alt="log3" src="https://github.com/user-attachments/assets/b4b437e2-9541-4559-b73e-156dcf066c12" />
+<img width="959" height="164" alt="log3" src="https://github.com/user-attachments/assets/b4b437e2-9541-4559-b73e-156dcf066c12" />
+<img width="959" height="164" alt="log3" src="https://github.com/user-attachments/assets/b4b437e2-9541-4559-b73e-156dcf066c12" />
+<img width="959" height="396" alt="log2" src="https://github.com/user-attachments/assets/31a5eb13-1ca1-4f5c-8238-520c02647a35" />
+<img width="959" height="396" alt="log2" src="https://github.com/user-attachments/assets/31a5eb13-1ca1-4f5c-8238-520c02647a35" />
+<img width="959" height="396" alt="log2" src="https://github.com/user-attachments/assets/31a5eb13-1ca1-4f5c-8238-520c02647a35" />
+<img width="959" height="401" alt="log1" src="https://github.com/user-attachments/assets/95cecb89-8127-4337-bcf3-63361d72c388" />
+<img width="959" height="401" alt="log1" src="https://github.com/user-attachments/assets/95cecb89-8127-4337-bcf3-63361d72c388" />
+<img width="959" height="401" alt="log1" src="https://github.com/user-attachments/assets/95cecb89-8127-4337-bcf3-63361d72c388" />
+
 
 ---
 
