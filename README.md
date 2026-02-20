@@ -1,4 +1,3 @@
-```markdown
 # 最終課題：Docker Compose を用いた Minecraft マルチプレイサーバ構築手順書
 
 ## 1. 目的と完成条件
@@ -138,5 +137,3 @@ docker compose logs
 
 * [itzg/minecraft-server - Docker Hub](https://hub.docker.com/r/itzg/minecraft-server)
 * [Docker Compose 公式ドキュメント](https://docs.docker.com/compose/)
-
-```
