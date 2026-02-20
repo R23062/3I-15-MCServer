@@ -1,76 +1,69 @@
-最終課題：Docker Compose を用いた Minecraft マルチプレイサーバ構築手順書
+```markdown
+# 最終課題：Docker Compose を用いた Minecraft マルチプレイサーバ構築手順書
 
-1. 目的と完成条件
+## 1. 目的と完成条件
 
-目的
+### 目的
+Docker Compose を活用し、Minecraft (PaperMC) サーバーをコンテナベースで構築する。設定のコード化（IaC）とデータの永続化を両立させ、迅速かつ再現可能なゲームサーバ環境を構築することを目的とする。
 
-これまでの授業で学んだOS設定、ネットワーク、コンテナ技術の基礎を応用し、Docker Compose を活用して Minecraft (PaperMC) サーバーをコンテナベースで構築する。設定のコード化（Infrastructure as Code）とデータの永続化を両立させ、迅速かつ再現可能なゲームサーバ環境を構築することを目的とする。
+### 完成条件
+* `docker compose up` によりエラーなくコンテナが起動すること。
+* ログにおいて `Starting Minecraft server on *:25565` およびレベル生成の開始が確認できること。
 
-完成条件
+---
 
-docker compose up によりエラーなくコンテナが起動すること。
+## 2. 前提条件
+* **対象 OS:** Ubuntu 22.04 LTS (検証環境：Google Cloud Shell / Debian 12)
+* **実行環境:** Google Cloud Shell (Cloud インフラ)
+* **利用ツール:** Docker, Docker Compose V2
+* **ネットワーク条件:** 25565ポートを使用
 
-ログにおいて Starting Minecraft server on *:25565 およびレベル（ワールド）生成の開始メッセージが確認できること。
+---
 
-2. 前提条件
+## 3. 追加する発展要素
+**【例 B 応用】Docker Compose によるコンテナ管理とデータ永続化**
+単一の `docker run` コマンドによる構築ではなく、`docker-compose.yml` を用いて、環境変数による EULA 同意・サーバタイプの指定、およびボリュームマウントによる「コンテナ破棄後もワールドデータが消えない」永続化設計を導入した。
 
-対象 OS: Ubuntu 22.04 LTS (検証環境：Google Cloud Shell / Debian 12)
+---
 
-実行環境: Google Cloud Shell (ブラウザベースのクラウド環境)
+## 4. 全体構成図とポート設計
+* **外部ポート:** 25565 (TCP)
+* **コンポーネント:**
+  * `minecraft-server`: PaperMC イメージを使用
+  * `data-volume`: ホストOS上の `./data` ディレクトリをマウント
 
-利用ツール: Docker, Docker Compose V2
 
-ネットワーク条件: デフォルトポート 25565 (TCP) を使用
 
-3. 追加する発展要素
+---
 
-【例 B 応用】Docker Compose によるコンテナ管理とデータ永続化
+## 5. 構築手順
 
-単一の docker run コマンドによる一時的な構築ではなく、docker-compose.yml を定義することで以下の発展的要素を導入した。
+### 5.1 事前準備
+まず、パッケージ情報の更新と必要なツールのインストール状態を確認する。
 
-環境変数による制御: EULAへの同意やサーバタイプ（PaperMC）の指定をコード上で管理。
-
-データの永続化: ボリュームマウント（Bind Mount）を用い、コンテナを破棄・再作成してもワールドデータや設定が維持される設計とした。
-
-リソース管理: 起動時のメモリ割り当て制限（1G）を環境変数から指定。
-
-4. 全体構成図とポート設計
-
-外部アクセスポート: 25565 (TCP)
-
-コンポーネント構成:
-
-Host OS: Google Cloud Shell
-
-Container: Minecraft Server (itzg/minecraft-server イメージ)
-
-Storage: ./data ディレクトリをコンテナ内の /data にマウント
-
-5. 構築手順
-
-5.1 事前準備
-
-システムパッケージの更新と、Docker Compose V2 が利用可能であることを確認する。
-
+```bash
 sudo apt update
 docker compose version
 
+```
 
-5.2 作業ディレクトリの作成
+### 5.2 作業ディレクトリの作成
 
-環境を分離し管理を容易にするため、専用のディレクトリを作成する。
+管理を容易にするため、専用のディレクトリを作成する。
 
+```bash
 mkdir mc-server && cd mc-server
 
+```
 
-5.3 設定ファイルの作成（完全版）
+### 5.3 設定ファイルの作成（完全版）
 
-以下の内容で docker-compose.yml を作成する。このファイルにより、サーバの構成が定義される。
+以下の内容で `docker-compose.yml` を作成する。
 
-保存パス: /home/smnzn_3t/mc-server/docker-compose.yml
+* **保存パス:** `~/mc-server/docker-compose.yml`
+* **権限:** 644 (所有者：現在のユーザー)
 
-所有権/権限: 現在の実行ユーザー / 644
-
+```yaml
 version: '3.3'
 services:
   minecraft:
@@ -78,63 +71,72 @@ services:
     ports:
       - "25565:25565"
     environment:
-      EULA: "TRUE"      # Minecraft EULA への同意
-      TYPE: "PAPER"     # パフォーマンスに優れた PaperMC を採用
-      MEMORY: "1G"      # 最大メモリ使用量を 1GB に制限
+      EULA: "TRUE"      # EULAへの同意
+      TYPE: "PAPER"     # 高速なサーバタイプ PaperMC を指定
+      MEMORY: "1G"      # 使用メモリ制限
     volumes:
-      - ./data:/data    # ホストのカレントディレクトリ内 data フォルダにデータを永続化
+      - ./data:/data    # データの永続化
     restart: unless-stopped
 
+```
 
-5.4 サービスの起動
+### 5.4 サービスの起動
 
-作成した設定ファイルに基づき、バックグラウンドでサービスを開始する。
+バックグラウンドでコンテナを起動する。
 
+```bash
 docker compose up -d
 
+```
 
-6. 動作確認と検証
+---
 
-6.1 プロセス確認
+## 6. 動作確認と検証
 
-コンテナが正常に生成され、起動（Up）状態にあることを確認する。
+### 6.1 プロセス確認
 
+コンテナが正常に `Up` していることを確認する。
+
+```bash
 docker compose ps
 
+```
 
-実行結果スクリーンショット 1：
-(ここに撮影した docker compose ps の画像を貼り付けてください)
+> **（ここにスクリーンショット1を貼付：docker compose ps の結果）**
 
-6.2 ログ確認・疎通確認
+### 6.2 ログ確認
 
-サーバ内部のログを確認し、起動プロセスが完了（Done）またはレベル生成が開始されていることを確認する。
+サーバの起動プロセスが完了していることをログで確認する。
 
+```bash
 docker compose logs
 
+```
 
-実行結果スクリーンショット 2：
-(ここに撮影したログの画像を貼り付けてください)
+> **（ここにスクリーンショット2を貼付：ログの最終行付近。Preparing level "world" 等）**
 
-7. トラブルシューティング
+---
 
-代表的な失敗例: docker-compose (ハイフンあり) 実行時の API バージョンエラー。
+## 7. トラブルシューティング
 
-原因: 実行環境の Docker エンジンと、古い V1 系の Compose バイナリの互換性問題。
+| 問題 | 原因 | 対処 |
+| --- | --- | --- |
+| `docker-compose` (ハイフンあり) 実行時の API バージョンエラー | 実行環境の Docker エンジンと古い V1 系の互換性問題 | 最新の `docker compose` (スペース区切り) コマンドを使用する |
+| `version` 属性に関する警告 | Docker Compose V2 では version 指定が非推奨 | 最新環境では `version` 行を削除しても問題ない |
 
-対処方法: 最新の V2 形式である docker compose (スペース区切り) コマンドを使用することで正常に動作することを確認した。
+---
 
-考慮すべき点: メモリ不足で起動しない場合は、MEMORY 環境変数の値を調整する必要がある。
+## 8. セキュリティ配慮
 
-8. セキュリティ配慮
+* **不要ポートの閉鎖:** 25565 以外のポートはコンテナ側で開放していない。
+* **秘密情報の扱い:** 今回は秘密情報（パスワード等）はないが、必要に応じて `.env` ファイルに切り出し、`.gitignore` で管理する。
+* **権限最小化:** コンテナ内プロセスは可能な限り非特権ユーザーで実行されるよう、イメージのベストプラクティスに従った。
 
-ポート開放の最小化: サービスの運用に必要な 25565 ポートのみをコンテナ外部へ公開している。
+---
 
-非特権ユーザーの利用: 使用している Docker イメージ（itzg/minecraft-server）のベストプラクティスに従い、コンテナ内プロセスが適切に管理されるよう構成した。
+## 9. 参考資料
 
-データの分離: 秘密情報（設定ファイル等）が含まれる data ディレクトリはホスト側で管理し、適切なパーミッション設定を推奨する。
+* [itzg/minecraft-server - Docker Hub](https://hub.docker.com/r/itzg/minecraft-server)
+* [Docker Compose 公式ドキュメント](https://docs.docker.com/compose/)
 
-9. 参考資料
-
-itzg/minecraft-server - Docker Hub Official Documentation
-
-Docker Compose File Reference (V3)
+```
